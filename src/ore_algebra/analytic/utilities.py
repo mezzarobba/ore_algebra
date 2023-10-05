@@ -286,3 +286,13 @@ def binomial_coefficients(s):
         for k in range(1, n + 1):
             binom[n][k] = binom[n-1][k-1] + binom[n-1][k]
     return binom
+
+def ctz(vec, maxlen):
+    z = 0
+    for m in range(min(len(vec), maxlen)):
+        if vec[-1 - m].is_zero():
+            z += 1
+        else:
+            break
+    return z
+
