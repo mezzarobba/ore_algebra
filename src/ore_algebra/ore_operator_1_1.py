@@ -1436,7 +1436,7 @@ class UnivariateOreOperatorOverUnivariateRing(UnivariateOreOperator):
         from sage.matrix.constructor import identity_matrix
         from ore_algebra.ideal import solve_coupled_system_CVM
         from sage.modules.free_module_element import vector
-        from sage.all import binomial
+        from sage.functions.other import binomial
         from sage.misc.flatten import flatten
 
         operator=self
