@@ -37,18 +37,21 @@ Installation
 To download and install the latest development version on a system where Sage
 was built from source or installed from official packages, run
 
-    sage -pip install git+https://github.com/mkauers/ore_algebra.git
+    sage -pip install --no-build-isolation git+https://github.com/mkauers/ore_algebra.git
 
 or
 
-    sage -pip install --user git+https://github.com/mkauers/ore_algebra.git
+    sage -pip install --user --no-build-isolation git+https://github.com/mkauers/ore_algebra.git
+
+Note the important `--no-build-isolation` flag, which causes `pip` to use the
+installed Sage library while building the package.
 
 The optional `--user` flag causes the package to be installed in your `.sage`
 directory instead of the Sage installation tree.
 
 Alternatively, run (square brackets indicate optional flags)
 
-    sage -pip install [--user] [--editable] .
+    sage -pip install [--user] --no-build-isolation [--editable] .
 
 from the root of a local git checkout. The `--editable` flag causes the
 "installed" version to point to your local checkout, making it easier,
