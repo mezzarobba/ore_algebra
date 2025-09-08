@@ -95,19 +95,6 @@ install all necessary development packages (and more).
 Arch Linux users will need at least the `cython` and `python-pkgconfig`
 packages.
 
-### Using ore_algebra without installation
-
-To use ore_algebra directly from a git checkout (without installation), run
-
-    sage -python setup.py build_ext --inplace
-
-from the checkout, and add the `src/` directory to your Python `sys.path`.
-
-ore_algebra contains compiled (Cython) modules which are automatically built as
-part of the installation procedure. Installation will fail if they cannot be
-built. Only some specific features depend on these modules, though, and the core
-features should work even if Cython modules are unavailable.
-
 ### Using ore_algebra in a virtual Python environment (no SageMath installation required)
 
 Create and activate a virtual environment:
