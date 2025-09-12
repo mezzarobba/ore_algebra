@@ -104,7 +104,7 @@ Create and activate a virtual environment:
 
 Install the package in the virtual environment:
 
-    pip install "git+https://github.com/mkauers/ore_algebra.git[passagemath]"
+    pip install "ore_algebra[passagemath] @ git+https://github.com/mkauers/ore_algebra.git"
 
 This automatically installs the modularized parts of the Sage library that are
 needed by the package. (These modularized distributions are provided by
