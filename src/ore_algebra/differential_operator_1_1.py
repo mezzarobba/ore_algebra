@@ -224,16 +224,16 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
 
         ord = self.order()
         z = ZZ.zero()
-        stirling = [[z for j in range(ord+1)] for i in range(ord+1)]
+        stirling = [[z for _ in range(ord + 1)] for _ in range(ord + 1)]
         stirling[0][0] = ZZ.one()
         for i in range(ord):
             for j in range(ord):
-                stirling[i+1][j+1] = i*stirling[i][j+1] + stirling[i][j]
+                stirling[i + 1][j + 1] = i * stirling[i][j + 1] + stirling[i][j]
 
-        out = [R.zero() for _ in range(ord+1)]
+        out = [R.zero() for _ in range(ord + 1)]
         for i, c in enumerate(self):
             for j in range(i + 1):
-                out[j] += (-1 if (i+j) % 2 else 1)*stirling[i][j]*c << (ord-i)
+                out[j] += (-1 if (i + j) % 2 else 1)*stirling[i][j]*c << (ord-i)
         val = min(pol.valuation() for pol in out)
         return alg([pol >> val for pol in out])
 
@@ -1268,7 +1268,7 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
             1 - 3/4*(x - 1) + 105/64*(x - 1)^2
         """
         from .analytic.differential_operator import DifferentialOperator
-        from .analytic.local_solutions import (log_series, LocalExpansions,
+        from .analytic.local_solutions import (LocalExpansions,
                                                LogMonomial)
         from .analytic.path import Point
         dop = DifferentialOperator(self)
@@ -1283,14 +1283,12 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
                 dop.base_ring().base_ring(),
                 mypoint.value.parent(),
                 *(sol.leftmost.as_number_field_element() for sol in sols))
-        return [FormalSum(
-                    [(c/ZZ(k).factorial(),
-                      LogMonomial(dx, sol.leftmost.as_number_field_element(), n, k))
-                        for n, vec in enumerate(sol.value)
-                        for k, c in reversed(list(enumerate(vec)))
-                        if not c.is_zero()],
-                    FormalSums(ring),
-                    reduce=False)
+        return [FormalSum
+                ([(c / ZZ(k).factorial(),
+                   LogMonomial(dx, sol.leftmost.as_number_field_element(), n, k))
+                  for n, vec in enumerate(sol.value)
+                  for k, c in reversed(list(enumerate(vec)))
+                  if not c.is_zero()], FormalSums(ring), reduce=False)
                 for sol in sols]
 
     def numerical_solution(self, ini, path, eps=1e-16, post_transform=None, **kwds):
@@ -1457,13 +1455,13 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
             [(0, 1.0000000000000000)]
         """
         from .analytic import analytic_continuation as ancont
-        from .analytic import local_solutions, utilities
         from .analytic.differential_operator import DifferentialOperator
         from .analytic.polynomial_root import PolynomialRoot
+        from .analytic import local_solutions
         dop = DifferentialOperator(self)
         post_transform = ancont.normalize_post_transform(dop, post_transform)
         post_mat = matrix(1, dop.order(),
-                          lambda i, j: ZZ(j).factorial()*post_transform[j])
+                          lambda i, j: ZZ(j).factorial() * post_transform[j])
         ctx = ancont.Context(**kwds)
         sol = ancont.analytic_continuation(dop, path, eps, ctx, ini=ini,
                                            post=post_mat,
@@ -1938,18 +1936,18 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
 
         INPUT:
 
-        - ``basis`` (default: None) an initial basis for the
+        - ``basis`` (default: ``None``) an initial basis for the
           computation
 
-        - ``iota`` (default: None) a function used to filter terms of
+        - ``iota`` (default: ``None``) a function used to filter terms of
           generalized series solutions which are to be considered
           integral. For the conditions that this function must satisfy, see
           :meth:`ContinuousGeneralizedSeries.valuation`
 
         -- ``infolevel`` (default: 0) verbosity level to use in the computations
 
-        -- ``sols`` (default: None) if given, a basis of solutions at infinity
-           to use for computing the valuations.
+        -- ``sols`` (default: ``None``) if given, a basis of solutions
+           at infinity to use for computing the valuations.
 
         OUTPUT:
 
@@ -2394,7 +2392,7 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
         from .analytic.factorization import right_factor
         return right_factor(self, verbose=verbose)
 
-    def hyperexponential_solutions(self, guessing = 10, one_solution = False):
+    def hyperexponential_solutions(self, guessing=10, one_solution=False):
         r"""
         Finds order 1 right factors of this operator
 
@@ -2430,7 +2428,7 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
             ([x*Dx - a0, x*Dx + a0], [(a0, x^2 - 2)])
         """
 
-        def product(l): #cartesian product iterator
+        def product(l):  # cartesian product iterator
             if not l:
                 yield []
             else:
@@ -2439,41 +2437,43 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
                         yield [x] + rest
 
         """ STEP 0 : FINDING SINGULARITIES """
-        R = self.base_ring() #Q[x]
+        R = self.base_ring()  # Q[x]
         x = R.gen()
-        K = R.base_ring() #Q
+        K = R.base_ring()  # Q
         Dx = self.parent().gen()
 
         L = self.numerator()
-        L_des = L.lclm(Dx - R.random_element()) #desingularization by hand
-        lc = gcd(L_des.leading_coefficient(),L.leading_coefficient())
+        L_des = L.lclm(Dx - R.random_element())  # desingularization by hand
+        lc = gcd(L_des.leading_coefficient(), L.leading_coefficient())
 
         factors = list(lc.factor())
-        factors = [f[0] for f in factors if f[0].degree()>1]
+        factors = [f[0] for f in factors if f[0].degree() > 1]
 
-        a = [] #list of extensions
+        a = []  # list of extensions
         i = 0
         while factors:
             f = factors[0]
-            K = K.extension(f,'a'+str(i))
-            a.append((K.gen(),f))
+            K = K.extension(f, f'a{i}')
+            a.append((K.gen(), f))
             factors2 = []
             for f in factors:
-                factors2+= list(f.change_ring(K).factor())
-            factors = [f for (f,_) in factors2 if f.degree()>1]
+                factors2 += list(f.change_ring(K).factor())
+            factors = (f for (f,) in factors2 if f.degree() > 1)
             factors = list(set(factors))
-            i+=1
+            i += 1
         R = PolynomialRing(K, x)
         x = R.gen()
         L = L.change_ring(R)
 
-        sing = [r for (r,m) in lc.change_ring(R).roots()]
+        sing = [r for r, _ in lc.change_ring(R).roots()]
 
         """ CRIMINAL RING EXTENSION """
         polys = []
-        for xi in sing+[infinity]:
-            if xi != infinity: L_xi = L.annihilator_of_composition(x+xi)
-            else: L_xi = L.annihilator_of_composition(~x)
+        for xi in sing + [infinity]:
+            if xi != infinity:
+                L_xi = L.annihilator_of_composition(x + xi)
+            else:
+                L_xi = L.annihilator_of_composition(~x)
             for S in L_xi.generalized_series_solutions(n=1, ramification=False):
                 K2 = S.base_ring()
                 while K2 != K:
@@ -2484,19 +2484,19 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
         factors2 = []
         for p in polys:
             factors2 += list(R(p).factor())
-        factors = [f for (f,_) in factors2 if f.degree()>1]
+        factors = (f for (f,) in factors2 if f.degree() > 1)
         factors = list(set(factors))
 
         while factors:
             f = factors[0]
-            K = K.extension(f,'a'+str(i))
-            a.append((K.gen(),f))
+            K = K.extension(f, 'a' + str(i))
+            a.append((K.gen(), f))
             factors2 = []
             for f in factors:
-                factors2+= list(f.change_ring(K).factor())
-            factors = [f for (f,_) in factors2 if f.degree()>1]
+                factors2 += list(f.change_ring(K).factor())
+            factors = (f for (f,) in factors2 if f.degree() > 1)
             factors = list(set(factors))
-            i+=1
+            i += 1
         R = PolynomialRing(K, x)
         x = R.gen()
         L = L.change_ring(R)
@@ -2507,77 +2507,93 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
 
         for xi in sing + [infinity]:
             E_xi = []
-            if xi != infinity: L_xi = L.annihilator_of_composition(x+xi)
-            else: L_xi = L.annihilator_of_composition(~x)
+            if xi != infinity:
+                L_xi = L.annihilator_of_composition(x+xi)
+            else:
+                L_xi = L.annihilator_of_composition(~x)
             for S in L_xi.generalized_series_solutions(n=1, ramification=False):
                 alpha, log_der = S.initial_exponent(), S.logarithmic_derivative_exponential_part()
                 for k in E_xi:
                     if k[1] - alpha in ZZ and k[2] - log_der == (k[1] - alpha)/x:
-                        if dim_alpha[k][2] - alpha > 0: dim_alpha[k] = [dim_alpha[k][0]+1, dim_alpha[k][1]+1, alpha, log_der]
+                        if dim_alpha[k][2] - alpha > 0:
+                            dim_alpha[k] = [dim_alpha[k][0]+1, dim_alpha[k][1]+1, alpha, log_der]
                         else:
-                            dim_alpha[k][0]+=1
-                            dim_alpha[k][1]+=1
+                            dim_alpha[k][0] += 1
+                            dim_alpha[k][1] += 1
                         break
                 else:
-                    E_xi.append((xi , alpha, log_der))
-                    dim_alpha[(xi , alpha, log_der)] = [1, 1, alpha, log_der]
+                    E_xi.append((xi, alpha, log_der))
+                    dim_alpha[(xi, alpha, log_der)] = [1, 1, alpha, log_der]
             E.append(E_xi)
         sol = []
 
         """ STEP 1.5 : GUESSING SOLUTIONS"""
         if guessing:
-            nb = 2*guessing + 10
+            nb = 2 * guessing + 10
             for l in E:
                 for k in l:
-                    if dim_alpha[k][0]==1 and dim_alpha[k][1]==1: # only look for degree 1
-                        if k[0] == infinity: L_xi = L.annihilator_of_composition(~x)
-                        else: L_xi = L.annihilator_of_composition(x+k[0])
+                    if dim_alpha[k][0] == 1 == dim_alpha[k][1]:  # only look for degree 1
+                        if k[0] == infinity:
+                            L_xi = L.annihilator_of_composition(~x)
+                        else:
+                            L_xi = L.annihilator_of_composition(x+k[0])
                         coeffs = L_xi.dict()
-                        L_shift = sum( coeffs[i] * (Dx + dim_alpha[k][3])**i for i in coeffs)
+                        L_shift = sum(coeffs[i] * (Dx + dim_alpha[k][3])**i
+                                      for i in coeffs)
                         seq = L_shift.power_series_solutions(nb)[0].list()
 
                         try:
                             seq = [QQ(k) for k in seq]
                             M_shift = guess(seq, OreAlgebra(ZZ[str(x)], str(Dx)))
                             coeffs = M_shift.dict()
-                            M_xi = sum( coeffs[i] * (Dx - dim_alpha[k][3])**i for i in coeffs)
-                            if k[0] == infinity: M = M_xi.annihilator_of_composition(~x)
-                            else: M = M_xi.annihilator_of_composition(x-k[0])
-                            if M.order()==1 and L.quo_rem(M)[1]==0:
+                            M_xi = sum(coeffs[i] * (Dx - dim_alpha[k][3])**i
+                                       for i in coeffs)
+                            if k[0] == infinity:
+                                M = M_xi.annihilator_of_composition(~x)
+                            else:
+                                M = M_xi.annihilator_of_composition(x-k[0])
+                            if M.order() == 1 and L.quo_rem(M)[1] == 0:
                                 sol.append(M)
-                                if one_solution: return sol,a
-                                for xi in sing + [infinity]: #lowering the dimension at singularities
-                                    if xi != infinity: M_xi = M.annihilator_of_composition(x+xi)
-                                    else: M_xi = M.annihilator_of_composition(~x)
+                                if one_solution:
+                                    return sol, a
+                                for xi in sing + [infinity]:  # lowering the dimension at singularities
+                                    if xi != infinity:
+                                        M_xi = M.annihilator_of_composition(x+xi)
+                                    else:
+                                        M_xi = M.annihilator_of_composition(~x)
                                     S = M_xi.generalized_series_solutions(n=1, ramification=False)[0]
                                     alpha, log_der = S.initial_exponent(), S.logarithmic_derivative_exponential_part()
                                     for kk in dim_alpha:
                                         if kk[0] == xi and kk[1] - alpha in ZZ and kk[2] - log_der == (kk[1] - alpha)/x:
-                                            dim_alpha[kk][0]-=1
+                                            dim_alpha[kk][0] -= 1
                                             break
-                        except: pass
+                        except:
+                            pass
 
-            E = [[k for k in l if dim_alpha[k][0]>0] for l in E]
+            E = [[k for k in l if dim_alpha[k][0] > 0] for l in E]
 
         """ STEP 2 : FINDING SOLUTIONS """
         coeffs = L.dict()
         for comb in product(E):
-            if sum(alpha for (_, alpha, _) in comb) in ZZ and all( dim_alpha[m][0] > 0 for m in comb):
+            if sum(alpha for _, alpha, _ in comb) in ZZ and all(dim_alpha[m][0] > 0 for m in comb):
                 exp_part_log_der = 0
                 d_bound = 0
-                for (xi, alpha, log_der) in comb:
-                    d_bound -= dim_alpha[(xi,alpha,log_der)][2]
-                    if xi != infinity: exp_part_log_der += dim_alpha[(xi,alpha,log_der)][3].subs({x:x-xi})
-                    else: exp_part_log_der += dim_alpha[(xi,alpha,log_der)][3].subs({x:K.one()/x})*(-1)/x**2 + dim_alpha[(xi,alpha,log_der)][2]/x
+                for xi, alpha, log_der in comb:
+                    d_bound -= dim_alpha[(xi, alpha, log_der)][2]
+                    if xi != infinity:
+                        exp_part_log_der += dim_alpha[(xi, alpha, log_der)][3].subs({x: x-xi})
+                    else:
+                        exp_part_log_der += dim_alpha[(xi, alpha, log_der)][3].subs({x: K.one()/x})*(-1)/x**2 + dim_alpha[(xi, alpha, log_der)][2]/x
 
-                L_shift = sum( coeffs[i] * (Dx + exp_part_log_der)**i for i in coeffs)
+                L_shift = sum(coeffs[i] * (Dx + exp_part_log_der)**i
+                              for i in coeffs)
                 L_shift = L_shift.numerator()
 
                 """ FINDING POLYNOMIAL SOLUTIONS BY HAND """
                 d_bound = ZZ(d_bound)
-                sys = [R(L_shift(x**i)).padded_list(d_bound + L_shift.degree() + 1) for i in range(d_bound+1)]
+                sys = [R(L_shift(x**i)).padded_list(d_bound + L_shift.degree() + 1) for i in range(d_bound + 1)]
                 sys.reverse()
-                M = matrix(K,sys)
+                M = matrix(K, sys)
                 ker = M.left_kernel()
                 lker = ker.basis()
                 pol_sol = []
@@ -2586,13 +2602,14 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
                     pol_sol.append(P)
 
                 for P in pol_sol:
-                    log_der_sol = exp_part_log_der + P.derivative(x)/P
-                    sol.append( log_der_sol.denominator()*Dx - log_der_sol.numerator() )
-                    if one_solution: return sol,a
+                    log_der_sol = exp_part_log_der + P.derivative(x) / P
+                    sol.append(log_der_sol.denominator() * Dx - log_der_sol.numerator())
+                    if one_solution:
+                        return sol, a
                     for m in comb:
-                        dim_alpha[m][0]-=1
+                        dim_alpha[m][0] -= 1
 
-        return sol,a
+        return sol, a
 
     def is_provably_irreducible(self, prec=None, max_prec=100000, *, verbose=False):
         r"""
@@ -2711,7 +2728,7 @@ class UnivariateEulerDifferentialOperatorOverUnivariateRing(UnivariateOreOperato
     Element of an Ore algebra K(x)[T], where T is the Euler differential operator T = x*d/dx
     """
 
-    def __init__(self, parent, *data, **kwargs):
+    def __init__(self, parent, *data, **kwargs) -> None:
         super(UnivariateOreOperatorOverUnivariateRing, self).__init__(parent, *data, **kwargs)
 
     def __call__(self, f, **kwargs):
@@ -2719,7 +2736,7 @@ class UnivariateEulerDifferentialOperatorOverUnivariateRing(UnivariateOreOperato
         R = self.parent()
         x = R.base_ring().gen()
         if "action" not in kwargs:
-            kwargs["action"] = lambda p: x*p.derivative()
+            kwargs["action"] = lambda p: x * p.derivative()
 
         return UnivariateOreOperator.__call__(self, f, **kwargs)
 
@@ -2759,7 +2776,7 @@ class UnivariateEulerDifferentialOperatorOverUnivariateRing(UnivariateOreOperato
             return alg.zero()
 
         R = alg.base_ring()
-        theta = R.gen()*alg.gen()
+        theta = R.gen() * alg.gen()
         theta_k = alg.one()
         c = self.coefficients(sparse=False)
         out = alg(R(c[0]))
@@ -2767,7 +2784,7 @@ class UnivariateEulerDifferentialOperatorOverUnivariateRing(UnivariateOreOperato
         for i in range(self.order()):
 
             theta_k *= theta
-            out += R(c[i + 1])*theta_k
+            out += R(c[i + 1]) * theta_k
 
         return out
 
