@@ -254,7 +254,7 @@ class MultivariateOreOperator(OreOperator):
         """
         try:
             return self.__poly.exponents()[0]
-        except (AttributeError, KeyError, ValueError):
+        except (AttributeError, KeyError, ValueError, IndexError):
             # zero operator
             return tuple([-1] * self.parent().ngens())
 

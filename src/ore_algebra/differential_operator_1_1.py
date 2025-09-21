@@ -2457,8 +2457,8 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
             a.append((K.gen(), f))
             factors2 = []
             for f in factors:
-                factors2 += list(f.change_ring(K).factor())
-            factors = (f for (f,) in factors2 if f.degree() > 1)
+                factors2.extend(f.change_ring(K).factor())
+            factors = (f for f, _ in factors2 if f.degree() > 1)
             factors = list(set(factors))
             i += 1
         R = PolynomialRing(K, x)
@@ -2483,8 +2483,8 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
 
         factors2 = []
         for p in polys:
-            factors2 += list(R(p).factor())
-        factors = (f for (f,) in factors2 if f.degree() > 1)
+            factors2.extend(R(p).factor())
+        factors = (f for f, _ in factors2 if f.degree() > 1)
         factors = list(set(factors))
 
         while factors:
@@ -2493,8 +2493,8 @@ class UnivariateDifferentialOperatorOverUnivariateRing(UnivariateOreOperatorOver
             a.append((K.gen(), f))
             factors2 = []
             for f in factors:
-                factors2 += list(f.change_ring(K).factor())
-            factors = (f for (f,) in factors2 if f.degree() > 1)
+                factors2.extend(f.change_ring(K).factor())
+            factors = (f for f, _ in factors2 if f.degree() > 1)
             factors = list(set(factors))
             i += 1
         R = PolynomialRing(K, x)
